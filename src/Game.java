@@ -58,13 +58,13 @@ public class Game {
     private boolean playerMove(Player player) {
         makeMove(player);
         gameField.showGameField();
-        boolean winner = isWinner(player);
-        if (winner) {
+        if (isWinner(player)) {
             String winnerText = player.getPlayerName() + " победил(а)!";
             System.out.println(winnerText);
             FileResultWriter.writeFile(winnerText);
+            return true;
         }
-        return winner;
+        return gameField.isFullGameField();
     }
 
     private void makeMove(Player player) {

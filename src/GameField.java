@@ -36,4 +36,17 @@ public class GameField {
         }
     }
 
+    public boolean isFullGameField() {
+        boolean isFull = true;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (cells[i][j] == defaultCellSign) {
+                    isFull = false;
+                    break;
+                };
+            }
+        }
+        return isFull;
+    }
+
 }
