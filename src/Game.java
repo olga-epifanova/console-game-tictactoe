@@ -46,33 +46,42 @@ public class Game {
     }
 
     private void playGame() {
+        GameHistory gameHistory = new GameHistory(firstPlayer, secondPlayer);
         boolean endGame;
         while (true) {
-            endGame = playerMove(firstPlayer);
+            endGame = playerMove(firstPlayer, gameHistory);
             if (endGame) break;
-            endGame = playerMove(secondPlayer);
+            endGame = playerMove(secondPlayer, gameHistory);
             if (endGame) break;
         }
+        gameHistory.createHistoryXML();
     }
 
-    private boolean playerMove(Player player) {
-        makeMove(player);
+    private boolean playerMove(Player player, GameHistory gameHistory) {
+        makeMove(player, gameHistory);
         gameField.showGameField();
         if (isWinner(player)) {
             String winnerText = player.getPlayerName() + " победил(а)!";
             System.out.println(winnerText);
             FileResultWriter.writeFile(winnerText);
+            gameHistory.setWinner(player);
             return true;
         }
-        return gameField.isFullGameField();
+        if (gameField.isFullGameField()) {
+            gameHistory.setWinner(null);
+            return true;
+        }
+        return false;
     }
 
-    private void makeMove(Player player) {
+    private void makeMove(Player player, GameHistory gameHistory) {
+        int x;
+        int y;
         while (true) {
             System.out.println(player.getPlayerName() + ", введите номер клетки по горизонтали (от 1 до 3)");
-            int x = getNumber();
+            x = getNumber();
             System.out.println(player.getPlayerName() + ", введите номер клетки по вертикали (от 1 до 3)");
-            int y = getNumber();
+            y = getNumber();
             if (!isFreeCell(y, x)) {
                 System.out.println("Эта ячейка уже занята!");
             } else {
@@ -80,6 +89,8 @@ public class Game {
                 break;
             }
         }
+        Step step = new Step(player, x, y);
+        gameHistory.addStep(step);
     }
 
     private static int getNumber() {
