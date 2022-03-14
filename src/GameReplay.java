@@ -6,8 +6,24 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GameReplay {
+
+    private static final Map<String, String> coordinatesMap = new HashMap<>();
+    static {
+        coordinatesMap.put("1", "1 1");
+        coordinatesMap.put("2", "2 1");
+        coordinatesMap.put("3", "3 1");
+        coordinatesMap.put("4", "1 2");
+        coordinatesMap.put("5", "2 2");
+        coordinatesMap.put("6", "3 2");
+        coordinatesMap.put("7", "1 3");
+        coordinatesMap.put("8", "2 3");
+        coordinatesMap.put("9", "3 3");
+    }
 
     public static void parseXML(File xmlFile) {
 
@@ -20,18 +36,18 @@ public class GameReplay {
 
             NodeList playerList = document.getElementsByTagName("Player");
 
-            ArrayList<Player> players = new ArrayList<>();
-            if (playerList.getLength() > 0) {
+            List<Player> players = new ArrayList<>();
+            if (playerList.getLength() > 1) {
                 players.add(getPlayer(playerList.item(0)));
                 players.add(getPlayer(playerList.item(1)));
             }
             for (Player player : players) {
-                System.out.println("Игрок №" + player.getplayerNumber() + " " + player.getPlayerName()
-                        + ", знак " + player.getPlayerSign());
+                System.out.println(String.format("Игрок №%s %s, знак %s",
+                        player.getplayerNumber(), player.getPlayerName(), player.getPlayerSign()));
             }
 
             NodeList stepList = document.getElementsByTagName("Step");
-            ArrayList<Step> steps = new ArrayList<>();
+            List<Step> steps = new ArrayList<>();
             for (int i = 0; i < stepList.getLength(); i++) {
                 steps.add(getStep(stepList.item(i), players));
             }
@@ -45,8 +61,8 @@ public class GameReplay {
                 } else {
                     Node winner = gameResult.item(0).getNextSibling();
                     Player winnerPlayer = getPlayer(winner);
-                    System.out.println("Победитель: Игрок №" + winnerPlayer.getplayerNumber() + " "
-                            + winnerPlayer.getPlayerName() + ", знак " + winnerPlayer.getPlayerSign());
+                    System.out.println(String.format("Победитель: Игрок №%s %s, знак %s",
+                            winnerPlayer.getplayerNumber(), winnerPlayer.getPlayerName(), winnerPlayer.getPlayerSign()));
                 }
             }
         } catch (Exception exc) {
@@ -60,22 +76,21 @@ public class GameReplay {
         String name = node.getAttributes().getNamedItem("name").getNodeValue();
         String symbol = node.getAttributes().getNamedItem("symbol").getNodeValue();
         char symbolChar = symbol.charAt(0);
-        Player player = new Player(id, name, symbolChar);
-        return player;
+        return new Player(id, name, symbolChar);
     }
 
-    private static Step getStep(Node node, ArrayList<Player> players) {
+    private static Step getStep(Node node, List<Player> players) {
         int playerId = Integer.parseInt(node.getAttributes().getNamedItem("playerId").getNodeValue());
         Player playerStep = players.get(playerId - 1);
-        String coordinates = adaptСoordinates(node.getFirstChild().getNodeValue());
+        String coordinates = adaptCoordinates(node.getFirstChild().getNodeValue());
 
         int x = Integer.parseInt(coordinates.substring(0, 1));
         int y = Integer.parseInt(coordinates.substring(coordinates.length() - 1));
-        Step step = new Step(playerStep, x, y);
-        return step;
+        return new Step(playerStep, x, y);
+
     }
 
-    private static void showSteps(ArrayList<Step> steps) {
+    private static void showSteps(List<Step> steps) {
         GameField gameField = new GameField();
         for (Step step : steps) {
             int y = step.getCoordinateY();
@@ -87,41 +102,8 @@ public class GameReplay {
         }
     }
 
-    private static String adaptСoordinates(String coordinates) {
-        String result;
-        switch (coordinates) {
-            case "1":
-                result = "1 1";
-                break;
-            case "2":
-                result = "2 1";
-                break;
-            case "3":
-                result = "3 1";
-                break;
-            case "4":
-                result = "1 2";
-                break;
-            case "5":
-                result = "2 2";
-                break;
-            case "6":
-                result = "3 2";
-                break;
-            case "7":
-                result = "1 3";
-                break;
-            case "8":
-                result = "2 3";
-                break;
-            case "9":
-                result = "3 3";
-                break;
-            default:
-                result = coordinates;
-        }
-        return result;
+    private static String adaptCoordinates(String coordinates) {
+        return coordinatesMap.getOrDefault(coordinates, coordinates);
     }
-
 
 }
