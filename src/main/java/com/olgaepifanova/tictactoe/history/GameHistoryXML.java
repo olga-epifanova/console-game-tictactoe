@@ -1,3 +1,7 @@
+package com.olgaepifanova.tictactoe.history;
+
+import com.olgaepifanova.tictactoe.Player;
+import com.olgaepifanova.tictactoe.Step;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -13,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class GameHistory {
+public class GameHistoryXML {
 
     private final Player firstPlayer;
     private final Player secondPlayer;
@@ -21,7 +25,7 @@ public class GameHistory {
     private Player winner;
     private final static DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy kk-mm-ss");
 
-    public GameHistory(Player firstPlayer, Player secondPlayer) {
+    public GameHistoryXML(Player firstPlayer, Player secondPlayer) {
         this.firstPlayer = firstPlayer;
         this.secondPlayer = secondPlayer;
     }
@@ -39,7 +43,7 @@ public class GameHistory {
             addPlayer(firstPlayer, docGameHistory, root);
             addPlayer(secondPlayer, docGameHistory, root);
 
-            Element game = docGameHistory.createElement("Game");
+            Element game = docGameHistory.createElement("com.olgaepifanova.tictactoe.Game");
             root.appendChild(game);
             addSteps(docGameHistory, game);
 
@@ -71,7 +75,7 @@ public class GameHistory {
     private void addSteps(Document doc, Element game) {
         int num = 1;
         for (Step step : steps) {
-            Element stepElement = doc.createElement("Step");
+            Element stepElement = doc.createElement("com.olgaepifanova.tictactoe.Step");
             String playerId = "" + step.getPlayer().getplayerNumber();
             stepElement.setAttribute("num", "" + num++);
             stepElement.setAttribute("playerId", "" + playerId);
@@ -82,7 +86,7 @@ public class GameHistory {
     }
 
     private void addPlayer(Player player, Document doc, Element elem) {
-        Element playerElement = doc.createElement("Player");
+        Element playerElement = doc.createElement("com.olgaepifanova.tictactoe.Player");
         playerElement.setAttribute("id", "" + player.getplayerNumber());
         playerElement.setAttribute("name", player.getPlayerName());
         playerElement.setAttribute("symbol", "" + player.getPlayerSign());

@@ -1,3 +1,8 @@
+package com.olgaepifanova.tictactoe;
+
+import com.olgaepifanova.tictactoe.replay.GameReplayJSON;
+import com.olgaepifanova.tictactoe.replay.GameReplayXML;
+
 import java.io.File;
 import java.util.Scanner;
 
@@ -9,7 +14,7 @@ public class Main {
         while (true) {
             System.out.println("Выберите действие");
             System.out.println("1 - Начать новую игру");
-            System.out.println("2 - Воспроизвести игру по xml файлу");
+            System.out.println("2 - Воспроизвести игру по файлу (xml или json)");
             int answer;
             if (scanner.hasNextInt()) {
                 answer = scanner.nextInt();
@@ -45,11 +50,19 @@ public class Main {
 
     public static void replayGame() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите наименование xml файла в формате имяфайла.xml");
+        System.out.println("Введите наименование файла в формате имяфайла.xml или имяфайла.json");
         String fileName = scanner.nextLine();
-        File xmlFile = new File(fileName);
-        if (xmlFile.exists()) {
-            GameReplay.parseXML(xmlFile);
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (fileName.endsWith(".xml")) {
+                GameReplayXML gameXML = new GameReplayXML();
+                gameXML.parseXML(file);
+            } else if (fileName.endsWith(".json")) {
+                GameReplayJSON gameJSON = new GameReplayJSON();
+                gameJSON.parseJSON(file);
+            } else {
+                System.out.println("Некорректный формат файла");
+            }
         } else {
             System.out.println("Файл не найден");
         }

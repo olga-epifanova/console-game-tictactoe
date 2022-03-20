@@ -1,3 +1,5 @@
+package com.olgaepifanova.tictactoe;
+
 public class Step {
 
     private final Player player;

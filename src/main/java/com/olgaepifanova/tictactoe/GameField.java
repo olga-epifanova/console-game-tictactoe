@@ -1,3 +1,5 @@
+package com.olgaepifanova.tictactoe;
+
 public class GameField {
 
     private final char[][] cells = {

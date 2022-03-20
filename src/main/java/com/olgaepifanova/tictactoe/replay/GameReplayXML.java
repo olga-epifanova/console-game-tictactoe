@@ -1,3 +1,8 @@
+package com.olgaepifanova.tictactoe.replay;
+
+import com.olgaepifanova.tictactoe.GameField;
+import com.olgaepifanova.tictactoe.Player;
+import com.olgaepifanova.tictactoe.Step;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -10,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameReplay {
+public class GameReplayXML {
 
     private static final Map<String, String> coordinatesMap = new HashMap<>();
     static {
@@ -25,7 +30,7 @@ public class GameReplay {
         coordinatesMap.put("9", "3 3");
     }
 
-    public static void parseXML(File xmlFile) {
+    public void parseXML (File xmlFile) {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -34,7 +39,7 @@ public class GameReplay {
             Document document = builder.parse(xmlFile);
             document.getDocumentElement().normalize();
 
-            NodeList playerList = document.getElementsByTagName("Player");
+            NodeList playerList = document.getElementsByTagName("com.olgaepifanova.tictactoe.Player");
 
             List<Player> players = new ArrayList<>();
             if (playerList.getLength() > 1) {
@@ -46,7 +51,7 @@ public class GameReplay {
                         player.getplayerNumber(), player.getPlayerName(), player.getPlayerSign()));
             }
 
-            NodeList stepList = document.getElementsByTagName("Step");
+            NodeList stepList = document.getElementsByTagName("com.olgaepifanova.tictactoe.Step");
             List<Step> steps = new ArrayList<>();
             for (int i = 0; i < stepList.getLength(); i++) {
                 steps.add(getStep(stepList.item(i), players));
@@ -71,7 +76,7 @@ public class GameReplay {
 
     }
 
-    private static Player getPlayer(Node node) {
+    private Player getPlayer(Node node) {
         int id = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
         String name = node.getAttributes().getNamedItem("name").getNodeValue();
         String symbol = node.getAttributes().getNamedItem("symbol").getNodeValue();
@@ -79,7 +84,7 @@ public class GameReplay {
         return new Player(id, name, symbolChar);
     }
 
-    private static Step getStep(Node node, List<Player> players) {
+    private Step getStep(Node node, List<Player> players) {
         int playerId = Integer.parseInt(node.getAttributes().getNamedItem("playerId").getNodeValue());
         Player playerStep = players.get(playerId - 1);
         String coordinates = adaptCoordinates(node.getFirstChild().getNodeValue());
@@ -90,7 +95,7 @@ public class GameReplay {
 
     }
 
-    private static void showSteps(List<Step> steps) {
+    private void showSteps(List<Step> steps) {
         GameField gameField = new GameField();
         for (Step step : steps) {
             int y = step.getCoordinateY();
@@ -102,7 +107,7 @@ public class GameReplay {
         }
     }
 
-    private static String adaptCoordinates(String coordinates) {
+    private String adaptCoordinates(String coordinates) {
         return coordinatesMap.getOrDefault(coordinates, coordinates);
     }
 

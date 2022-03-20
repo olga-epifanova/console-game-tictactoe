@@ -1,3 +1,5 @@
+package com.olgaepifanova.tictactoe;
+
 public class Player {
 
     private final int playerNumber;

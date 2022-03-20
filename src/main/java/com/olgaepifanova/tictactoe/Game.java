@@ -1,3 +1,7 @@
+package com.olgaepifanova.tictactoe;
+
+import com.olgaepifanova.tictactoe.history.GameHistoryXML;
+
 import java.util.Scanner;
 
 public class Game {
@@ -46,35 +50,37 @@ public class Game {
     }
 
     private void playGame() {
-        GameHistory gameHistory = new GameHistory(firstPlayer, secondPlayer);
+        GameHistoryXML gameHistoryXML = new GameHistoryXML(firstPlayer, secondPlayer);
         boolean endGame;
         while (true) {
-            endGame = playerMove(firstPlayer, gameHistory);
+            endGame = playerMove(firstPlayer, gameHistoryXML);
             if (endGame) break;
-            endGame = playerMove(secondPlayer, gameHistory);
+            endGame = playerMove(secondPlayer, gameHistoryXML);
             if (endGame) break;
         }
-        gameHistory.createHistoryXML();
+        gameHistoryXML.createHistoryXML();
+
     }
 
-    private boolean playerMove(Player player, GameHistory gameHistory) {
-        makeMove(player, gameHistory);
+    private boolean playerMove(Player player, GameHistoryXML gameHistoryXML) {
+        makeMove(player, gameHistoryXML);
         gameField.showGameField();
         if (isWinner(player)) {
-            String winnerText = player.getPlayerName() + " победил(а)!";
+            String winnerText = "Победитель: " + player.getPlayerName();
             System.out.println(winnerText);
             FileResultWriter.writeFile(winnerText);
-            gameHistory.setWinner(player);
+            gameHistoryXML.setWinner(player);
             return true;
         }
         if (gameField.isFullGameField()) {
-            gameHistory.setWinner(null);
+            gameHistoryXML.setWinner(null);
+            System.out.println("Ничья!");
             return true;
         }
         return false;
     }
 
-    private void makeMove(Player player, GameHistory gameHistory) {
+    private void makeMove(Player player, GameHistoryXML gameHistory) {
         int x;
         int y;
         while (true) {
