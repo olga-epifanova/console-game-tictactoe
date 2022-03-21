@@ -1,6 +1,5 @@
 package com.olgaepifanova.tictactoe.replay;
 
-import com.olgaepifanova.tictactoe.GameField;
 import com.olgaepifanova.tictactoe.Player;
 import com.olgaepifanova.tictactoe.Step;
 import org.w3c.dom.Document;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameReplayXML {
+public class GameReplayXML extends GameReplay {
 
     private static final Map<String, String> coordinatesMap = new HashMap<>();
     static {
@@ -30,7 +29,8 @@ public class GameReplayXML {
         coordinatesMap.put("9", "3 3");
     }
 
-    public void parseXML (File xmlFile) {
+    @Override
+    public void parseFile (File xmlFile) {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -39,7 +39,7 @@ public class GameReplayXML {
             Document document = builder.parse(xmlFile);
             document.getDocumentElement().normalize();
 
-            NodeList playerList = document.getElementsByTagName("com.olgaepifanova.tictactoe.Player");
+            NodeList playerList = document.getElementsByTagName("Player");
 
             List<Player> players = new ArrayList<>();
             if (playerList.getLength() > 1) {
@@ -51,7 +51,7 @@ public class GameReplayXML {
                         player.getplayerNumber(), player.getPlayerName(), player.getPlayerSign()));
             }
 
-            NodeList stepList = document.getElementsByTagName("com.olgaepifanova.tictactoe.Step");
+            NodeList stepList = document.getElementsByTagName("Step");
             List<Step> steps = new ArrayList<>();
             for (int i = 0; i < stepList.getLength(); i++) {
                 steps.add(getStep(stepList.item(i), players));
@@ -93,18 +93,6 @@ public class GameReplayXML {
         int y = Integer.parseInt(coordinates.substring(coordinates.length() - 1));
         return new Step(playerStep, x, y);
 
-    }
-
-    private void showSteps(List<Step> steps) {
-        GameField gameField = new GameField();
-        for (Step step : steps) {
-            int y = step.getCoordinateY();
-            int x = step.getCoordinateX();
-            char sign = step.getPlayer().getPlayerSign();
-            gameField.setCell(y - 1, x - 1, sign);
-            gameField.showGameField();
-            System.out.println();
-        }
     }
 
     private String adaptCoordinates(String coordinates) {

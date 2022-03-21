@@ -1,7 +1,11 @@
 package com.olgaepifanova.tictactoe;
 
+import com.olgaepifanova.tictactoe.history.GameHistoryFile;
+import com.olgaepifanova.tictactoe.history.GameHistoryJSON;
 import com.olgaepifanova.tictactoe.history.GameHistoryXML;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game {
@@ -50,37 +54,39 @@ public class Game {
     }
 
     private void playGame() {
-        GameHistoryXML gameHistoryXML = new GameHistoryXML(firstPlayer, secondPlayer);
+        List<GameHistoryFile> gameHistoryList = new ArrayList<>();
+        gameHistoryList.add(new GameHistoryXML(firstPlayer, secondPlayer));
+        gameHistoryList.add(new GameHistoryJSON(firstPlayer, secondPlayer));
+
         boolean endGame;
         while (true) {
-            endGame = playerMove(firstPlayer, gameHistoryXML);
+            endGame = playerMove(firstPlayer, gameHistoryList);
             if (endGame) break;
-            endGame = playerMove(secondPlayer, gameHistoryXML);
+            endGame = playerMove(secondPlayer, gameHistoryList);
             if (endGame) break;
         }
-        gameHistoryXML.createHistoryXML();
-
+        gameHistoryList.forEach(GameHistoryFile::createHistoryFile);
     }
 
-    private boolean playerMove(Player player, GameHistoryXML gameHistoryXML) {
-        makeMove(player, gameHistoryXML);
+    private boolean playerMove(Player player, List<GameHistoryFile> gameHistoryList) {
+        makeMove(player, gameHistoryList);
         gameField.showGameField();
         if (isWinner(player)) {
             String winnerText = "Победитель: " + player.getPlayerName();
             System.out.println(winnerText);
             FileResultWriter.writeFile(winnerText);
-            gameHistoryXML.setWinner(player);
+            gameHistoryList.forEach((GameHistoryFile gameHistory) -> gameHistory.setWinner(player));
             return true;
         }
         if (gameField.isFullGameField()) {
-            gameHistoryXML.setWinner(null);
+            gameHistoryList.forEach((GameHistoryFile gameHistory) -> gameHistory.setWinner(null));
             System.out.println("Ничья!");
             return true;
         }
         return false;
     }
 
-    private void makeMove(Player player, GameHistoryXML gameHistory) {
+    private void makeMove(Player player, List<GameHistoryFile> gameHistoryList) {
         int x;
         int y;
         while (true) {
@@ -96,7 +102,7 @@ public class Game {
             }
         }
         Step step = new Step(player, x, y);
-        gameHistory.addStep(step);
+        gameHistoryList.forEach((GameHistoryFile gameHistory) -> gameHistory.addStep(step));
     }
 
     private static int getNumber() {

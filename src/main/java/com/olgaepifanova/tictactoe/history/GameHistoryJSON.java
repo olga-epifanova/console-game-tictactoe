@@ -1,19 +1,91 @@
 package com.olgaepifanova.tictactoe.history;
 
 import com.olgaepifanova.tictactoe.Player;
+import com.olgaepifanova.tictactoe.Step;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
-public class GameHistoryJSON {
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
-    private final Player firstPlayer;
-    private final Player secondPlayer;
+public class GameHistoryJSON extends GameHistoryFile {
 
     public GameHistoryJSON(Player firstPlayer, Player secondPlayer) {
-        this.firstPlayer = firstPlayer;
-        this.secondPlayer = secondPlayer;
+        super(firstPlayer, secondPlayer);
     }
 
-    public void createHistoryJSON() {
+    @Override
+    public void createHistoryFile() {
 
+        JSONObject firstPlayerObj = new JSONObject();
+        addPlayer(firstPlayer, firstPlayerObj);
+
+        JSONObject secondPlayerObj = new JSONObject();
+        addPlayer(secondPlayer, secondPlayerObj);
+
+        JSONArray players = new JSONArray();
+        players.put(firstPlayerObj);
+        players.put(secondPlayerObj);
+
+        JSONArray stepArr = new JSONArray();
+        addSteps(stepArr);
+        JSONObject gameObj = new JSONObject();
+        gameObj.put("Step", stepArr);
+
+        JSONObject gameResultObj = new JSONObject();
+        JSONObject winnerObj = new JSONObject();
+        if (winner != null) {
+            addPlayer(winner, winnerObj);
+            gameResultObj.put("Player", winnerObj);
+        }
+
+        JSONObject gameplayJson = new JSONObject();
+        gameplayJson.put("Player", players);
+        gameplayJson.put("Game", gameObj);
+        gameplayJson.put("GameResult", gameResultObj);
+
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("Gameplay", gameplayJson);
+
+        String currentDateStr = DATE_TIME_FORMAT.format(LocalDateTime.now());
+        try {
+            FileWriter file = new FileWriter("game " + currentDateStr + ".json");
+            file.write(resultJson.toString(4));
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    private void addSteps(JSONArray stepArr) {
+        int num = 1;
+        for (Step step : steps) {
+            JSONObject stepJson = new JSONObject();
+            String playerId = "" + step.getPlayer().getplayerNumber();
+            stepJson.put("num", num++);
+            stepJson.put("playerId", playerId);
+            stepJson.put("coordinateX", step.getCoordinateX());
+            stepJson.put("coordinateY", step.getCoordinateY());
+            stepArr.put(stepJson);
+        }
+    }
+
+    private void addPlayer(Player player, JSONObject playerObj) {
+        playerObj.put("id", player.getplayerNumber());
+        playerObj.put("name", player.getPlayerName());
+        playerObj.put("symbol", "" + player.getPlayerSign());
+    }
+
+    @Override
+    public void addStep(Step step) {
+        steps.add(step);
+    }
+
+    @Override
+    public void setWinner(Player player) {
+        winner = player;
+    }
+
 }
 

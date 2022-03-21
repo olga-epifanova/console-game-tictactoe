@@ -14,23 +14,15 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
-public class GameHistoryXML {
-
-    private final Player firstPlayer;
-    private final Player secondPlayer;
-    private final ArrayList<Step> steps = new ArrayList<>();
-    private Player winner;
-    private final static DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy kk-mm-ss");
+public class GameHistoryXML extends GameHistoryFile {
 
     public GameHistoryXML(Player firstPlayer, Player secondPlayer) {
-        this.firstPlayer = firstPlayer;
-        this.secondPlayer = secondPlayer;
+        super(firstPlayer, secondPlayer);
     }
 
-    public void createHistoryXML() {
+    @Override
+    public void createHistoryFile() {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -43,7 +35,7 @@ public class GameHistoryXML {
             addPlayer(firstPlayer, docGameHistory, root);
             addPlayer(secondPlayer, docGameHistory, root);
 
-            Element game = docGameHistory.createElement("com.olgaepifanova.tictactoe.Game");
+            Element game = docGameHistory.createElement("Game");
             root.appendChild(game);
             addSteps(docGameHistory, game);
 
@@ -68,14 +60,10 @@ public class GameHistoryXML {
 
     }
 
-    public void addStep(Step step) {
-        steps.add(step);
-    }
-
     private void addSteps(Document doc, Element game) {
         int num = 1;
         for (Step step : steps) {
-            Element stepElement = doc.createElement("com.olgaepifanova.tictactoe.Step");
+            Element stepElement = doc.createElement("Step");
             String playerId = "" + step.getPlayer().getplayerNumber();
             stepElement.setAttribute("num", "" + num++);
             stepElement.setAttribute("playerId", "" + playerId);
@@ -86,13 +74,19 @@ public class GameHistoryXML {
     }
 
     private void addPlayer(Player player, Document doc, Element elem) {
-        Element playerElement = doc.createElement("com.olgaepifanova.tictactoe.Player");
+        Element playerElement = doc.createElement("Player");
         playerElement.setAttribute("id", "" + player.getplayerNumber());
         playerElement.setAttribute("name", player.getPlayerName());
         playerElement.setAttribute("symbol", "" + player.getPlayerSign());
         elem.appendChild(playerElement);
     }
 
+    @Override
+    public void addStep(Step step) {
+        steps.add(step);
+    }
+
+    @Override
     public void setWinner(Player player) {
         winner = player;
     }

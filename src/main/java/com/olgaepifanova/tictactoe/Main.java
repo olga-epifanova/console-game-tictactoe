@@ -1,5 +1,6 @@
 package com.olgaepifanova.tictactoe;
 
+import com.olgaepifanova.tictactoe.replay.GameReplay;
 import com.olgaepifanova.tictactoe.replay.GameReplayJSON;
 import com.olgaepifanova.tictactoe.replay.GameReplayXML;
 
@@ -53,13 +54,14 @@ public class Main {
         System.out.println("Введите наименование файла в формате имяфайла.xml или имяфайла.json");
         String fileName = scanner.nextLine();
         File file = new File(fileName);
+        GameReplay gameReplay;
         if (file.exists()) {
             if (fileName.endsWith(".xml")) {
-                GameReplayXML gameXML = new GameReplayXML();
-                gameXML.parseXML(file);
+                gameReplay = new GameReplayXML();
+                gameReplay.parseFile(file);
             } else if (fileName.endsWith(".json")) {
-                GameReplayJSON gameJSON = new GameReplayJSON();
-                gameJSON.parseJSON(file);
+                gameReplay = new GameReplayJSON();
+                gameReplay.parseFile(file);
             } else {
                 System.out.println("Некорректный формат файла");
             }
